@@ -3,6 +3,19 @@ import Image from 'next/image';
 import { BookMarked, Presentation, Star } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import type { Project } from '@/lib/projects';
+
+const colors = [
+  'bg-blue-600',
+  'bg-red-500',
+  'bg-fuchsia-500',
+  'bg-green-500',
+  'bg-cyan-500',
+  'bg-amber-500',
+  'bg-lime-500',
+];
+
+const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];
 
 export function CardAction({
   className,
@@ -31,79 +44,71 @@ export function CardAction({
 }
 
 export interface CardProps {
-  title: string;
-  description: string;
-  image: string;
-  repository: string;
-  report?: string;
-  presentation?: string;
-  stars: number;
-  author: {
-    avatar: string;
-    username: string;
-    name: string;
-  };
-  children?: ReactNode;
+  project: Project;
 }
 
-export function Card(props: CardProps) {
+export function Card({ project }: CardProps) {
   return (
     <div className="relative overflow-hidden rounded-lg border border-stone-200 transition-all hover:shadow-xl shadow-md">
-      <div className="flex flex-col h-full">
-        <Image
-          alt="made project image"
-          className="h-14 w-full object-cover"
-          height={400}
-          src={props.image}
-          width={500}
-        />
+      <div className="flex flex-col h-full pb-3">
+        {project.image ? (
+          <Image
+            alt="made project image"
+            className="h-20 w-full object-cover"
+            height={400}
+            src={project.image}
+            width={500}
+          />
+        ) : (
+          <div className={cn('h-4 w-full', getRandomColor())} />
+        )}
         <div className="border-t border-stone-200 p-4 flex-grow">
           <p className="my-0 text-xl font-bold leading-tight line-clamp-3">
-            {props.title}
+            {project.title}
           </p>
           <div className="flex items-center space-x-1.5 mt-1 text-slate-500 px-2">
             <Image
               alt="avatar"
               className="inline-block w-6 h-6 rounded-full"
               height={24}
-              src={props.author.avatar}
+              src={project.owner.avatar}
               width={24}
             />
             <Link
               className="text-sm font-medium z-20 hover:underline"
-              href={`https://github.com/${props.author.username}`}
+              href={`https://github.com/${project.owner.username}`}
               target="_blank"
             >
-              {props.author.name}
+              {project.owner.name ?? `@${project.owner.username}`}
             </Link>
           </div>
           <p className="mt-2 line-clamp-4 text-sm font-normal leading-snug text-stone-500">
-            {props.description}
+            {project.description}
           </p>
         </div>
 
         <div className="flex items-center justify-end px-4">
           <CardAction
             className="bg-amber-500 hover:bg-amber-600"
-            href={`${props.repository}/stargazers`}
+            href={`${project.url}/stargazers`}
             icon={<Star size={16} />}
-            title={props.stars > 0 ? String(props.stars) : 'Gift a star'}
+            title={project.stars > 0 ? String(project.stars) : 'Gift a star'}
           />
         </div>
-        {props.report || props.presentation ? (
-          <div className="flex items-center justify-end px-4 mt-1 mb-4">
+        {project.report || project.presentation ? (
+          <div className="flex items-center justify-end px-4 mt-1">
             <div className="flex items-center space-x-1">
-              {props.report ? (
+              {project.report ? (
                 <CardAction
                   className="bg-green-400 hover:bg-green-500"
-                  href={props.report}
+                  href={project.report}
                   icon={<BookMarked size={16} />}
                   title="Final Report"
                 />
               ) : null}
-              {props.presentation ? (
+              {project.presentation ? (
                 <CardAction
-                  href={props.presentation}
+                  href={project.presentation}
                   icon={<Presentation size={16} />}
                   title="Presentation"
                 />
@@ -115,7 +120,7 @@ export function Card(props: CardProps) {
 
       <Link
         className="absolute block inset-0 z-10"
-        href={props.repository}
+        href={project.url}
         target="_blank"
       />
     </div>
