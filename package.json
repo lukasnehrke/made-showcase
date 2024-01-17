@@ -4,16 +4,19 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "dev": "next dev",
+    "dev": "next dev --turbo",
     "format": "prettier --write .",
     "lint": "next lint",
     "start": "next start"
   },
   "prettier": "@vercel/style-guide/prettier",
   "dependencies": {
+    "clsx": "^2.1.0",
+    "lucide-react": "^0.311.0",
     "next": "14.0.4",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "tailwind-merge": "^2.2.0"
   },
   "devDependencies": {
     "@types/node": "^20",
