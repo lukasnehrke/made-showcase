@@ -1,7 +1,6 @@
 'use server';
 
-// eslint-disable-next-line import/named -- not sure whats happening here
-import { cache } from 'react';
+import { unstable_cache as cache } from 'next/cache';
 import { firestore } from '@/lib/firestore';
 
 export interface Project {
@@ -24,7 +23,7 @@ export interface Project {
 
 export const getProjects = cache(async (): Promise<Project[]> => {
   // eslint-disable-next-line no-console -- logging
-  console.log('fetching projects');
+  console.log('fetching projects again');
 
   const projects = [];
 
@@ -35,4 +34,4 @@ export const getProjects = cache(async (): Promise<Project[]> => {
   }
 
   return projects;
-});
+}, ['projects']);
