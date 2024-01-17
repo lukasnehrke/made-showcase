@@ -7,6 +7,7 @@
     "dev": "next dev --turbo",
     "format": "prettier --write .",
     "lint": "next lint",
+    "prepare": "husky install",
     "start": "next start"
   },
   "prettier": "@vercel/style-guide/prettier",
@@ -26,6 +27,8 @@
     "autoprefixer": "^10.4.16",
     "eslint": "^8.56.0",
     "eslint-config-next": "14.0.4",
+    "husky": "^8.0.0",
+    "lint-staged": "^15.2.0",
     "postcss": "^8.4.33",
     "prettier": "^3.2.3",
     "tailwindcss": "^3.4.1",
