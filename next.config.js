@@ -12,6 +12,15 @@ const nextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/ws2324',
+        permanent: false,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

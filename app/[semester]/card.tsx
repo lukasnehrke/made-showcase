@@ -2,22 +2,10 @@ import type { ReactNode } from 'react';
 import Image from 'next/image';
 import { BookMarked, Presentation, Star } from 'lucide-react';
 import Link from 'next/link';
-import { cn } from '@/lib/utils';
-import type { Project } from '@/lib/projects';
+import { cn, getRandomColor } from '@/lib/utils';
+import type { Project } from '@/data/projects';
 
-const colors = [
-  'bg-blue-600',
-  'bg-red-500',
-  'bg-fuchsia-500',
-  'bg-green-500',
-  'bg-cyan-500',
-  'bg-amber-500',
-  'bg-lime-500',
-];
-
-const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];
-
-export function CardAction({
+function CardAction({
   className,
   href,
   icon,
@@ -49,14 +37,14 @@ export interface CardProps {
 
 export function Card({ project }: CardProps) {
   return (
-    <div className="relative overflow-hidden rounded-lg border border-stone-200 transition-all hover:shadow-xl shadow-md">
+    <div className="relative overflow-hidden rounded-lg border border-stone-200 transition-all hover:shadow-lg shadow-md">
       <div className="flex flex-col h-full pb-3">
-        {project.image ? (
+        {project.bannerUrl ? (
           <Image
             alt="made project image"
             className="h-20 w-full object-cover"
             height={400}
-            src={project.image}
+            src={project.bannerUrl}
             width={500}
           />
         ) : (
@@ -71,44 +59,46 @@ export function Card({ project }: CardProps) {
               alt="avatar"
               className="inline-block w-6 h-6 rounded-full"
               height={24}
-              src={project.owner.avatar}
+              src={project.owner.avatarUrl}
               width={24}
             />
             <Link
               className="text-sm font-medium z-20 hover:underline"
-              href={`https://github.com/${project.owner.username}`}
+              href={project.owner.url}
               target="_blank"
             >
               {project.owner.name ?? `@${project.owner.username}`}
             </Link>
           </div>
           <p className="mt-2 line-clamp-4 text-sm font-normal leading-snug text-stone-500">
-            {project.description}
+            {project.summary}
           </p>
         </div>
 
         <div className="flex items-center justify-end px-4">
           <CardAction
             className="bg-amber-500 hover:bg-amber-600"
-            href={`${project.url}/stargazers`}
+            href={project.starsUrl}
             icon={<Star size={16} />}
-            title={project.stars > 0 ? String(project.stars) : 'Gift a star'}
+            title={
+              project.starsCount > 0 ? String(project.starsUrl) : 'Gift a star'
+            }
           />
         </div>
-        {project.report || project.presentation ? (
+        {project.reportUrl || project.presentationUrl ? (
           <div className="flex items-center justify-end px-4 mt-1">
             <div className="flex items-center space-x-1">
-              {project.report ? (
+              {project.reportUrl ? (
                 <CardAction
                   className="bg-green-400 hover:bg-green-500"
-                  href={project.report}
+                  href={project.reportUrl}
                   icon={<BookMarked size={16} />}
                   title="Final Report"
                 />
               ) : null}
-              {project.presentation ? (
+              {project.presentationUrl ? (
                 <CardAction
-                  href={project.presentation}
+                  href={project.presentationUrl}
                   icon={<Presentation size={16} />}
                   title="Presentation"
                 />
@@ -120,7 +110,7 @@ export function Card({ project }: CardProps) {
 
       <Link
         className="absolute block inset-0 z-10"
-        href={project.url}
+        href={project.repositoryUrl}
         target="_blank"
       />
     </div>
