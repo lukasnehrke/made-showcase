@@ -18,7 +18,7 @@ export default function ProjectSearch() {
       params.delete('query');
     }
     router.replace(`${pathname}?${params.toString()}`);
-  }, 350);
+  }, 450);
 
   return (
     <div className="relative w-full">

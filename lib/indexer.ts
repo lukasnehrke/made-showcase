@@ -10,14 +10,29 @@ interface Status {
   result: string;
 }
 
+type ProjectOverrides = Record<string, Partial<Project>>;
+
 const madeTemplateRepository = { owner: 'jvalue', repo: 'made-template' };
+
+const overrides: ProjectOverrides = {
+  'nmarkert/electromobility': {
+    featured: true,
+    bannerUrl:
+      'https://oss.cs.fau.de/wp-content/uploads/2023/09/madess23_markert-480x320.jpg',
+  },
+  'thesagni/2023-AMSE-Sagni': {
+    featured: true,
+    bannerUrl:
+      'https://oss.cs.fau.de/wp-content/uploads/2023/08/majumdar-MADE-SS23-463x320.jpg',
+  },
+};
 
 const getTemplateForks = async (page: number) => {
   return octokit.rest.repos
     .listForks({
       ...madeTemplateRepository,
       page,
-      per_page: 3,
+      per_page: 30,
       sort: 'oldest',
     })
     .then((res) =>
@@ -28,8 +43,10 @@ const getTemplateForks = async (page: number) => {
     );
 };
 
-const isVideo = (file: string) =>
-  file.endsWith('.mp4') || file.endsWith('.mov');
+const isVideo = (file?: string) => {
+  const ext = file?.split('.').pop()?.toLowerCase();
+  return ['mp4', 'mov', 'web', 'ogg'].includes(ext ?? '');
+};
 
 const getSemester = (date: Date): string => {
   // ssXX starts in 1. April and ends in 30. September, wsXX starts in 1. October and ends in 31. March
@@ -101,8 +118,9 @@ export const updateProjects = async () => {
         });
 
         const $ = cheerio.load(readme.data as unknown as string);
-        project.title =
-          $('h1, h2, h3, h4, h5, h6').first().text().trim() || fork.name;
+        const heading = $('h1, h2, h3, h4, h5, h6').first().text();
+
+        project.title = heading || fork.name;
         project.summary = fork.description ?? 'An awesome MADE project.';
       } catch (err) {
         if (
@@ -160,15 +178,22 @@ export const updateProjects = async () => {
         }
       }
 
+      // handle overrides
+      if (`${fork.owner.login}/${fork.name}` in overrides) {
+        Object.assign(project, overrides[`${fork.owner.login}/${fork.name}`]);
+      }
+
+      const newDoc = {
+        ...project,
+        updatedAt: FieldValue.serverTimestamp(),
+      };
+
       if (doc.exists) {
-        t.update(docRef, {
-          ...project,
-          updatedAt: FieldValue.serverTimestamp(),
-        });
+        t.update(docRef, newDoc);
         return { id: docRef.id, result: 'updated' };
       }
 
-      t.set(docRef, { ...project, createdAt: FieldValue.serverTimestamp() });
+      t.set(docRef, newDoc);
       return { id: docRef.id, result: 'created' };
     });
 

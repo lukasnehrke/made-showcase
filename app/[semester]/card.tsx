@@ -81,7 +81,9 @@ export function Card({ project }: CardProps) {
             href={project.starsUrl}
             icon={<Star size={16} />}
             title={
-              project.starsCount > 0 ? String(project.starsUrl) : 'Gift a star'
+              project.starsCount > 0
+                ? String(project.starsCount)
+                : 'Gift a star'
             }
           />
         </div>

@@ -1,7 +1,7 @@
 import { getProjects } from '@/data/projects';
-import { Card } from '@/app/[semester]/card';
 import SemesterSelect from '@/app/[semester]/semester-select';
 import ProjectSearch from '@/app/[semester]/project-search';
+import ProjectList from '@/app/[semester]/project-list';
 
 export const revalidate = 3600;
 
@@ -11,28 +11,14 @@ interface PageProps {
   };
   searchParams?: {
     query?: string;
-    page?: string;
   };
 }
 
 export default async function Page(props: PageProps) {
+  const semester = props.params.semester.toLowerCase();
   const query = (props.searchParams?.query || '').toLowerCase();
-  //const currentPage = Number(props.searchParams?.page) || 1;
 
-  let projects = await getProjects(props.params.semester);
-
-  if (query) {
-    // no need to overcomplicate this
-    projects = projects.filter((project) => {
-      return (
-        project.title.toLowerCase().includes(query) ||
-        project.summary.toLowerCase().includes(query) ||
-        (project.owner.name &&
-          project.owner.name.toLowerCase().includes(query)) ||
-        project.owner.username.toLowerCase().includes(query)
-      );
-    });
-  }
+  const projects = await getProjects({ semester, query });
 
   return (
     <>
@@ -40,11 +26,7 @@ export default async function Page(props: PageProps) {
         <SemesterSelect />
         <ProjectSearch />
       </div>
-      <div className="mt-8 grid grid-cols-3 gap-4">
-        {projects.map((project) => (
-          <Card key={project.id} project={project} />
-        ))}
-      </div>
+      <ProjectList projects={projects} />
     </>
   );
 }

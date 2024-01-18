@@ -1,11 +1,13 @@
 'use server';
 
 import { unstable_cache as cache } from 'next/cache';
+import type { Timestamp } from '@google-cloud/firestore';
 import { firestore } from '@/lib/firestore';
 
 export interface Project {
   id: string;
   semester: string;
+  featured: boolean;
   title: string;
   summary: string;
   repositoryUrl: string;
@@ -14,7 +16,9 @@ export interface Project {
   bannerUrl?: string;
   starsUrl: string;
   starsCount: number;
+  updatedAt: string;
   owner: {
+    id: number;
     name?: string;
     username: string;
     url: string;
@@ -23,22 +27,43 @@ export interface Project {
 }
 
 export const getProjects = cache(
-  async (semester: string): Promise<Project[]> => {
-    // eslint-disable-next-line no-console -- logging
-    console.log('fetching projects again');
+  async ({
+    semester,
+    query,
+    cursor,
+  }: {
+    semester: string;
+    query?: string;
+    cursor?: string;
+  }): Promise<Project[]> => {
+    console.log('fetching projects', semester, query, cursor);
 
-    const projects: Project[] = [];
-
-    const query = await firestore
+    let firestoreQuery = firestore
       .collection('projects')
       .where('semester', '==', semester)
-      .get();
+      .orderBy('featured', 'desc')
+      .orderBy('starsCount', 'desc')
+      .limit(25);
 
-    query.forEach((doc) => {
-      projects.push({ id: doc.id, ...doc.data() } as Project);
+    if (cursor) {
+      const cursorDoc = await firestore
+        .collection('projects')
+        .doc(cursor)
+        .get();
+      firestoreQuery = firestoreQuery.startAfter(cursorDoc);
+    }
+
+    return firestoreQuery.get().then(({ docs }) => {
+      return docs.map(
+        (doc) =>
+          ({
+            ...doc.data(),
+            id: doc.id,
+            updatedAt: (doc.get('updatedAt') as Timestamp | undefined)
+              ?.toDate()
+              .toISOString(),
+          }) as Project,
+      );
     });
-
-    return projects;
   },
-  ['projects'],
 );
