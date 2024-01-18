@@ -1,6 +1,6 @@
 import { getProjects } from '@/data/projects';
 import { Card } from '@/app/[semester]/card';
-import Search from '@/app/[semester]/search';
+import SemesterSelect from '@/app/[semester]/semester-select';
 
 export const revalidate = 3600;
 
@@ -33,7 +33,8 @@ export default async function Page(props: PageProps) {
   return (
     <>
       <div className="flex items-center w-full">
-        <Search />
+        <SemesterSelect />
+        {/*<Search />*/}
       </div>
       <div className="mt-8 grid grid-cols-3 gap-4">
         {projects.map((project) => (

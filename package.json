@@ -13,8 +13,10 @@
   "prettier": "@vercel/style-guide/prettier",
   "dependencies": {
     "@google-cloud/firestore": "^7.2.0",
+    "@radix-ui/react-select": "^2.0.0",
     "@vercel/analytics": "^1.1.1",
     "cheerio": "1.0.0-rc.12",
+    "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "geist": "^1.2.1",
     "lucide-react": "^0.311.0",
@@ -23,6 +25,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tailwind-merge": "^2.2.0",
+    "tailwindcss-animate": "^1.0.7",
     "use-debounce": "^10.0.0"
   },
   "devDependencies": {
