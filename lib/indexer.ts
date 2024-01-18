@@ -30,7 +30,7 @@ const getTemplateForks = async (page: number) => {
     .listForks({
       ...madeTemplateRepository,
       page,
-      per_page: 3,
+      per_page: 100,
       sort: 'oldest',
     })
     .then((res) =>
@@ -101,6 +101,20 @@ export const updateProjects = async () => {
           ? new Date(fork.created_at)
           : new Date();
         project.semester = getSemester(createdAt);
+      }
+
+      try {
+        // parser owner name
+        const user = await octokit.rest.users.getByUsername({
+          username: fork.owner.login,
+          headers: {
+            'If-Modified-Since': existingProject?.updatedAt.toUTCString(),
+          },
+        });
+
+        project.ownerName = user.data.name ?? undefined;
+      } catch (err) {
+        if (isError(err)) throw err;
       }
 
       try {
