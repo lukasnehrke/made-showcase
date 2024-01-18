@@ -6,7 +6,7 @@ export default function Layout({ children }: PropsWithChildren) {
     <div className="max-w-screen-lg mx-auto pt-14 pb-4">
       <header className="flex items-center">
         <h1 className="text-lg">
-          🔥{' '}
+          <span className="mr-2">🔥</span>{' '}
           <Link
             className="font-medium hover:underline"
             href="https://oss.cs.fau.de/teaching/specific/made/"

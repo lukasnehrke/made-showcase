@@ -15,10 +15,8 @@ export default function SemesterSelect() {
   const router = useRouter();
 
   const handleValueChange = (value: string): void => {
-    const url = new URL(window.location.href);
-    url.pathname = `/${value}`;
-    url.search = searchParams.toString();
-    router.replace(url.toString());
+    const params = new URLSearchParams(searchParams);
+    router.replace(`/${value}?${params.toString()}`);
   };
 
   return (

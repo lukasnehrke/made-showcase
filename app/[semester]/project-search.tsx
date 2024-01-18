@@ -2,8 +2,10 @@
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useDebouncedCallback } from 'use-debounce';
+import { Search } from 'lucide-react';
+import { Input } from '@/components/input';
 
-export default function Search() {
+export default function ProjectSearch() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -19,11 +21,15 @@ export default function Search() {
   }, 350);
 
   return (
-    <input
-      className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
-      defaultValue={searchParams.get('query')?.toString()}
-      onChange={(e) => handleSearch(e.target.value)}
-      placeholder="Search projects.."
-    />
+    <div className="relative w-full">
+      <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+      <Input
+        className="pl-9"
+        defaultValue={searchParams.get('query')?.toString()}
+        onChange={(e) => handleSearch(e.target.value)}
+        placeholder="Search projects.."
+        type="search"
+      />
+    </div>
   );
 }
