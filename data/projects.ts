@@ -1,69 +1,48 @@
 'use server';
 
-import { unstable_cache as cache } from 'next/cache';
-import type { Timestamp } from '@google-cloud/firestore';
-import { firestore } from '@/lib/firestore';
+import { asc, desc, eq, like, or } from 'drizzle-orm';
+import type { PgSelect } from 'drizzle-orm/pg-core';
+import { db } from '@/lib/drizzle';
+import { projects } from '@/lib/schema';
 
-export interface Project {
-  id: string;
-  semester: string;
-  featured: boolean;
-  title: string;
-  summary: string;
-  repositoryUrl: string;
-  reportUrl?: string;
-  presentationUrl?: string;
-  bannerUrl?: string;
-  starsUrl: string;
-  starsCount: number;
-  updatedAt: string;
-  owner: {
-    id: number;
-    name?: string;
-    username: string;
-    url: string;
-    avatarUrl: string;
-  };
+function withSearchQuery<T extends PgSelect>(qb: T, query?: string) {
+  if (!query) return qb;
+  return qb.where(
+    or(
+      like(projects.title, `%${query}%`),
+      like(projects.summary, `%${query}%`),
+    ),
+  );
 }
 
-export const getProjects = cache(
-  async ({
-    semester,
-    query,
-    cursor,
-  }: {
-    semester: string;
-    query?: string;
-    cursor?: string;
-  }): Promise<Project[]> => {
-    console.log('fetching projects', semester, query, cursor);
+function withPagination<T extends PgSelect>(
+  qb: T,
+  offset: number,
+  limit: number,
+) {
+  return qb.offset(offset).limit(limit);
+}
 
-    let firestoreQuery = firestore
-      .collection('projects')
-      .where('semester', '==', semester)
-      .orderBy('featured', 'desc')
-      .orderBy('starsCount', 'desc')
-      .limit(25);
+export const getProjects = async ({
+  semester,
+  query,
+  offset,
+  limit,
+}: {
+  semester: string;
+  offset: number;
+  limit: number;
+  query?: string;
+}) => {
+  const dynamicQuery = db
+    .select()
+    .from(projects)
+    .where(eq(projects.semester, semester))
+    .orderBy(desc(projects.starsCount), asc(projects.title))
+    .$dynamic();
 
-    if (cursor) {
-      const cursorDoc = await firestore
-        .collection('projects')
-        .doc(cursor)
-        .get();
-      firestoreQuery = firestoreQuery.startAfter(cursorDoc);
-    }
+  void withPagination(dynamicQuery, offset, limit);
+  void withSearchQuery(dynamicQuery, query);
 
-    return firestoreQuery.get().then(({ docs }) => {
-      return docs.map(
-        (doc) =>
-          ({
-            ...doc.data(),
-            id: doc.id,
-            updatedAt: (doc.get('updatedAt') as Timestamp | undefined)
-              ?.toDate()
-              .toISOString(),
-          }) as Project,
-      );
-    });
-  },
-);
+  return dynamicQuery;
+};

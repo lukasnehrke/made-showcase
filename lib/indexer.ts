@@ -1,38 +1,36 @@
-import type { Timestamp } from '@google-cloud/firestore';
-import { FieldValue } from '@google-cloud/firestore';
 import * as cheerio from 'cheerio';
+import { eq } from 'drizzle-orm';
 import { octokit } from '@/lib/octokit';
-import { firestore } from '@/lib/firestore';
-import type { Project } from '@/data/projects';
+import { db } from '@/lib/drizzle';
+import { projects } from '@/lib/schema';
+import { madeTemplateRepository, overrides } from '@/lib/constants';
+
+interface UpdateProject {
+  title?: string;
+  summary?: string;
+  semester?: string;
+  repositoryUrl?: string;
+  reportUrl?: string;
+  presentationUrl?: string;
+  starsCount: number;
+  ownerId: number;
+  ownerName?: string;
+  ownerUsername: string;
+  ownerUrl: string;
+  ownerAvatarUrl: string;
+}
 
 interface Status {
   id: string;
   result: string;
 }
 
-type ProjectOverrides = Record<string, Partial<Project>>;
-
-const madeTemplateRepository = { owner: 'jvalue', repo: 'made-template' };
-
-const overrides: ProjectOverrides = {
-  'nmarkert/electromobility': {
-    featured: true,
-    bannerUrl:
-      'https://oss.cs.fau.de/wp-content/uploads/2023/09/madess23_markert-480x320.jpg',
-  },
-  'thesagni/2023-AMSE-Sagni': {
-    featured: true,
-    bannerUrl:
-      'https://oss.cs.fau.de/wp-content/uploads/2023/08/majumdar-MADE-SS23-463x320.jpg',
-  },
-};
-
 const getTemplateForks = async (page: number) => {
   return octokit.rest.repos
     .listForks({
       ...madeTemplateRepository,
       page,
-      per_page: 30,
+      per_page: 3,
       sort: 'oldest',
     })
     .then((res) =>
@@ -48,6 +46,12 @@ const isVideo = (file?: string) => {
   return ['mp4', 'mov', 'web', 'ogg'].includes(ext ?? '');
 };
 
+const isError = (err?: unknown) => {
+  return (
+    !err || typeof err !== 'object' || !('status' in err) || err.status !== 304
+  );
+};
+
 const getSemester = (date: Date): string => {
   // ssXX starts in 1. April and ends in 30. September, wsXX starts in 1. October and ends in 31. March
   const year = date.getFullYear() % 100;
@@ -61,42 +65,38 @@ export const updateProjects = async () => {
   const forks = await getTemplateForks(1);
 
   const statuses: Status[] = [];
-
   for await (const fork of forks) {
-    const docRef = firestore.collection('projects').doc(String(fork.id));
+    const id = String(fork.id);
 
-    const result = await firestore.runTransaction(async (t) => {
-      const doc = await t.get(docRef);
-
-      const updatedAt: Date | undefined =
-        doc.exists && doc.get('updatedAt')
-          ? (doc.get('updatedAt') as Timestamp).toDate()
-          : undefined;
+    const status = await db.transaction(async (tx) => {
+      const existingProject = await tx.query.projects.findFirst({
+        columns: { semester: true, updatedAt: true },
+        where: eq(projects.id, id),
+      });
 
       if (
-        updatedAt &&
+        existingProject?.updatedAt &&
         fork.updated_at &&
-        updatedAt >= new Date(fork.updated_at)
+        existingProject.updatedAt >= new Date(fork.updated_at)
       ) {
-        t.update(docRef, { updatedAt: FieldValue.serverTimestamp() });
-        return { id: docRef.id, result: 'skipped' };
+        await tx
+          .update(projects)
+          .set({ updatedAt: new Date() })
+          .where(eq(projects.id, id));
+        return { id, result: 'skipped' };
       }
 
-      const project: Omit<Partial<Project>, 'id'> = {
+      const project: UpdateProject = {
         repositoryUrl: fork.html_url,
-        starsUrl: `${fork.html_url}/stargazers`,
         starsCount: fork.stargazers_count ?? 0,
-        owner: {
-          id: fork.owner.id,
-          name: `@${fork.owner.login}`,
-          username: fork.owner.login,
-          avatarUrl: fork.owner.avatar_url,
-          url: fork.owner.html_url,
-        },
+        ownerId: fork.owner.id,
+        ownerUrl: fork.owner.html_url,
+        ownerUsername: fork.owner.login,
+        ownerAvatarUrl: fork.owner.avatar_url,
       };
 
       // set semester the project was created: ssXX or wsXX
-      if (!doc.exists) {
+      if (!existingProject?.semester) {
         const createdAt = fork.created_at
           ? new Date(fork.created_at)
           : new Date();
@@ -113,26 +113,17 @@ export const updateProjects = async () => {
             format: 'html',
           },
           headers: {
-            'If-Modified-Since': updatedAt?.toUTCString(),
+            'If-Modified-Since': existingProject?.updatedAt.toUTCString(),
           },
         });
 
         const $ = cheerio.load(readme.data as unknown as string);
-        const heading = $('h1, h2, h3, h4, h5, h6').first().text();
+        const heading = $('h1, h2, h3, h4, h5, h6').first().text().trim();
 
         project.title = heading || fork.name;
         project.summary = fork.description ?? 'An awesome MADE project.';
       } catch (err) {
-        if (
-          !err ||
-          typeof err !== 'object' ||
-          !('status' in err) ||
-          err.status !== 304
-        ) {
-          console.error(err);
-          project.title = fork.name;
-          project.summary = fork.description ?? 'An awesome MADE project.';
-        }
+        if (isError(err)) throw err;
       }
 
       try {
@@ -142,7 +133,7 @@ export const updateProjects = async () => {
           repo: fork.name,
           path: 'project',
           headers: {
-            'If-Modified-Since': updatedAt?.toUTCString(),
+            'If-Modified-Since': existingProject?.updatedAt.toUTCString(),
           },
         });
 
@@ -168,14 +159,7 @@ export const updateProjects = async () => {
           });
         }
       } catch (err) {
-        if (
-          !err ||
-          typeof err !== 'object' ||
-          !('status' in err) ||
-          err.status !== 304
-        ) {
-          console.error(err);
-        }
+        if (isError(err)) throw err;
       }
 
       // handle overrides
@@ -183,21 +167,23 @@ export const updateProjects = async () => {
         Object.assign(project, overrides[`${fork.owner.login}/${fork.name}`]);
       }
 
-      const newDoc = {
-        ...project,
-        updatedAt: FieldValue.serverTimestamp(),
-      };
-
-      if (doc.exists) {
-        t.update(docRef, newDoc);
-        return { id: docRef.id, result: 'updated' };
+      if (!existingProject) {
+        await tx.insert(projects).values({
+          id,
+          ...project,
+          semester: project.semester!,
+          repositoryUrl: project.repositoryUrl!,
+          title: project.title!,
+          summary: project.summary!,
+        });
+        return { id, result: 'updated' };
       }
 
-      t.set(docRef, newDoc);
-      return { id: docRef.id, result: 'created' };
+      await tx.update(projects).set(project).where(eq(projects.id, id));
+      return { id, result: 'created' };
     });
 
-    statuses.push(result);
+    statuses.push(status);
   }
 
   return statuses;

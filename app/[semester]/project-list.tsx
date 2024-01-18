@@ -1,7 +1,7 @@
 'use client';
 
-import type { Project } from '@/data/projects';
 import { Card } from '@/app/[semester]/card';
+import type { Project } from '@/lib/schema';
 
 export default function ProjectList({
   projects: initialProjects,

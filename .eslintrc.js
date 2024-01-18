@@ -28,6 +28,7 @@ module.exports = {
   rules: {
     'import/no-default-export': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/no-non-null-assertion': 'off',
     'import/no-extraneous-dependencies': 'off',
     'no-console': 'off',
   },

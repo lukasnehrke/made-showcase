@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { BookMarked, Presentation, Star } from 'lucide-react';
 import Link from 'next/link';
 import { cn, getRandomColor } from '@/lib/utils';
-import type { Project } from '@/data/projects';
+import type { Project } from '@/lib/schema';
 
 function CardAction({
   className,
@@ -59,15 +59,15 @@ export function Card({ project }: CardProps) {
               alt="avatar"
               className="inline-block w-6 h-6 rounded-full"
               height={24}
-              src={project.owner.avatarUrl}
+              src={project.ownerAvatarUrl}
               width={24}
             />
             <Link
               className="text-sm font-medium z-20 hover:underline"
-              href={project.owner.url}
+              href={project.ownerUrl}
               target="_blank"
             >
-              {project.owner.name ?? `@${project.owner.username}`}
+              {project.ownerName ?? `@${project.ownerUsername}`}
             </Link>
           </div>
           <p className="mt-2 line-clamp-4 text-sm font-normal leading-snug text-stone-500">
@@ -78,7 +78,7 @@ export function Card({ project }: CardProps) {
         <div className="flex items-center justify-end px-4">
           <CardAction
             className="bg-amber-500 hover:bg-amber-600"
-            href={project.starsUrl}
+            href={`${project.repositoryUrl}/stargazers`}
             icon={<Star size={16} />}
             title={
               project.starsCount > 0

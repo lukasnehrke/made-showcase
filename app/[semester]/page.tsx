@@ -18,7 +18,7 @@ export default async function Page(props: PageProps) {
   const semester = props.params.semester.toLowerCase();
   const query = (props.searchParams?.query || '').toLowerCase();
 
-  const projects = await getProjects({ semester, query });
+  const projects = await getProjects({ semester, query, offset: 0, limit: 15 });
 
   return (
     <>
