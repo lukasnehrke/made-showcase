@@ -6,6 +6,9 @@ import ProjectSearch from '@/app/[semester]/project-search';
 export const revalidate = 3600;
 
 interface PageProps {
+  params: {
+    semester: string;
+  };
   searchParams?: {
     query?: string;
     page?: string;
@@ -16,7 +19,7 @@ export default async function Page(props: PageProps) {
   const query = (props.searchParams?.query || '').toLowerCase();
   //const currentPage = Number(props.searchParams?.page) || 1;
 
-  let projects = await getProjects();
+  let projects = await getProjects(props.params.semester);
 
   if (query) {
     // no need to overcomplicate this

@@ -5,6 +5,7 @@ import { firestore } from '@/lib/firestore';
 
 export interface Project {
   id: string;
+  semester: string;
   title: string;
   summary: string;
   repositoryUrl: string;
@@ -21,17 +22,23 @@ export interface Project {
   };
 }
 
-export const getProjects = cache(async (): Promise<Project[]> => {
-  // eslint-disable-next-line no-console -- logging
-  console.log('fetching projects again');
+export const getProjects = cache(
+  async (semester: string): Promise<Project[]> => {
+    // eslint-disable-next-line no-console -- logging
+    console.log('fetching projects again');
 
-  const projects = [];
+    const projects: Project[] = [];
 
-  const docs = await firestore.collection('projects').listDocuments();
-  for await (const doc of docs) {
-    const snapshot = await doc.get();
-    projects.push({ id: doc.id, ...snapshot.data() } as Project);
-  }
+    const query = await firestore
+      .collection('projects')
+      .where('semester', '==', semester)
+      .get();
 
-  return projects;
-}, ['projects']);
+    query.forEach((doc) => {
+      projects.push({ id: doc.id, ...doc.data() } as Project);
+    });
+
+    return projects;
+  },
+  ['projects'],
+);

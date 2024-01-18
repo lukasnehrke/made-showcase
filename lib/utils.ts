@@ -15,5 +15,6 @@ const colors = [
   'bg-lime-500',
 ];
 
-export const getRandomColor = () =>
-  colors[Math.floor(Math.random() * colors.length)];
+export const getRandomColor = () => {
+  return colors[Math.floor(Math.random() * colors.length)];
+};
