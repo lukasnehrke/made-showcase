@@ -48,7 +48,7 @@ export function Card({ project }: CardProps) {
             width={500}
           />
         ) : (
-          <div className={cn('h-4 w-full', getRandomColor())} />
+          <div className={cn('h-4 w-full', getRandomColor(project.id))} />
         )}
         <div className="border-t border-stone-200 p-4 flex-grow">
           <p className="my-0 text-xl font-bold leading-tight line-clamp-3">
