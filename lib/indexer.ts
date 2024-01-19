@@ -62,7 +62,7 @@ const getSemester = (date: Date): string => {
 };
 
 export const updateProjects = async () => {
-  const forks = await getTemplateForks(1);
+  const forks = await getTemplateForks(2);
 
   const statuses: Status[] = [];
   for await (const fork of forks) {
@@ -181,19 +181,20 @@ export const updateProjects = async () => {
         Object.assign(project, overrides[`${fork.owner.login}/${fork.name}`]);
       }
 
-      if (!existingProject) {
-        await tx.insert(projects).values({
-          id,
-          ...project,
-          semester: project.semester!,
-          repositoryUrl: project.repositoryUrl!,
-          title: project.title!,
-          summary: project.summary!,
-        });
+      if (existingProject) {
+        await tx.update(projects).set(project).where(eq(projects.id, id));
         return { id, result: 'updated' };
       }
 
-      await tx.update(projects).set(project).where(eq(projects.id, id));
+      await tx.insert(projects).values({
+        id,
+        ...project,
+        semester: project.semester!,
+        repositoryUrl: project.repositoryUrl!,
+        title: project.title!,
+        summary: project.summary!,
+      });
+
       return { id, result: 'created' };
     });
 
