@@ -7,8 +7,8 @@ import { ThemeToggle } from '@/components/theme-toggle';
 export default function Layout({ children }: PropsWithChildren) {
   return (
     <>
-      <header className="fixed z-50 w-full bg-background">
-        <div className="max-w-screen-lg mx-auto pt-8 pb-4 space-y-4">
+      <header className="fixed z-50 bg-background left-0 w-full">
+        <div className="max-w-screen-lg mx-auto px-3.5 pt-8 pb-4 space-y-4">
           <div className="flex items-center justify-between">
             <h1 className="text-lg">
               <span className="mr-2">🔥</span>{' '}
@@ -30,7 +30,9 @@ export default function Layout({ children }: PropsWithChildren) {
           <div className="shrink-0 bg-border h-[1px] w-full" />
         </div>
       </header>
-      <main className="max-w-screen-lg mx-auto pt-32 pb-8">{children}</main>
+      <main className="max-w-screen-lg mx-auto px-3.5 pt-32 pb-8">
+        {children}
+      </main>
     </>
   );
 }

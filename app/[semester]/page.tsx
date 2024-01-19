@@ -39,7 +39,7 @@ export default async function Page(props: PageProps) {
     return notFound();
   }
 
-  const projects = await getProjects({ semester, query, offset: 0, limit: 25 });
+  const projects = await getProjects({ semester, query, offset: 0, limit: 24 });
 
   return <ProjectList projects={projects} />;
 }
