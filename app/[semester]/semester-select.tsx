@@ -26,7 +26,7 @@ export default function SemesterSelect() {
       </SelectTrigger>
       <SelectContent>
         <SelectItem value="ss23">SS23</SelectItem>
-        <SelectItem value="ws24">WS23/24</SelectItem>
+        <SelectItem value="ws23">WS23/24</SelectItem>
       </SelectContent>
     </Select>
   );

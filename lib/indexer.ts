@@ -55,9 +55,8 @@ const isError = (err?: unknown) => {
 const getSemester = (date: Date): string => {
   // ssXX starts in 1. April and ends in 30. September, wsXX starts in 1. October and ends in 31. March
   const year = date.getFullYear() % 100;
-  if (date.getMonth() < 9 && date.getMonth() > 2) {
-    return `ss${year}`;
-  }
+  if (date.getMonth() < 9 && date.getMonth() > 2) return `ss${year}`;
+  if (date.getMonth() < 3) return `ws${year - 1}`;
   return `ws${year}`;
 };
 
