@@ -1,6 +1,4 @@
 import { getProjects } from '@/data/projects';
-import SemesterSelect from '@/app/[semester]/semester-select';
-import ProjectSearch from '@/app/[semester]/project-search';
 import ProjectList from '@/app/[semester]/project-list';
 
 export const revalidate = 3600;
@@ -21,12 +19,6 @@ export default async function Page(props: PageProps) {
   const projects = await getProjects({ semester, query, offset: 0, limit: 25 });
 
   return (
-    <>
-      <div className="flex items-center space-x-2.5 w-full">
-        <SemesterSelect />
-        <ProjectSearch />
-      </div>
-      <ProjectList projects={projects} />
-    </>
+    <ProjectList projects={projects} />
   );
 }
