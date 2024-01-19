@@ -1,4 +1,4 @@
-import type { Project } from '@/data/projects';
+import type { Project } from '@/lib/schema';
 
 export const madeTemplateRepository = {
   owner: 'jvalue',
