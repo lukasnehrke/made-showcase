@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   icons: {
     icon: '/favicon.svg',
   },
+  verification: {
+    google: 'RWFe5NMAc3ZhhVCWATwJ8avTIMXrwI1h3ZqlgEuYn78',
+  },
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {
