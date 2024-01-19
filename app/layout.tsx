@@ -5,7 +5,10 @@ import { Analytics } from '@vercel/analytics/react';
 import { GeistSans } from 'geist/font/sans';
 
 export const metadata: Metadata = {
-  title: 'MADE Showcase',
+  title: {
+    template: '%s | MADE Showcase',
+    default: 'MADE Showcase',
+  },
   description: 'A showcase of MADE projects across all semesters.',
   icons: {
     icon: '/favicon.svg',

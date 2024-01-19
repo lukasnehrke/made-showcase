@@ -1,9 +1,13 @@
 import type { Project } from '@/lib/schema';
 
+export const baseUrl = 'https://made-showcase.vercel.app';
+
 export const madeTemplateRepository = {
   owner: 'jvalue',
   repo: 'made-template',
 };
+
+export const semesters = ['ss23', 'ws23'];
 
 // prettier-ignore
 export const overrides: Record<string, Partial<Project>> = {
