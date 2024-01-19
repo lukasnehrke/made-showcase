@@ -1,27 +1,28 @@
 'use server';
 
-import { asc, desc, eq, ilike, or } from 'drizzle-orm';
+import { and, desc, eq, ilike, or } from 'drizzle-orm';
 import { unstable_cache as cache } from 'next/cache';
 import type { PgSelect } from 'drizzle-orm/pg-core';
 import { db } from '@/lib/drizzle';
 import { projects } from '@/lib/schema';
 
-function withSearchQuery<T extends PgSelect>(qb: T, query?: string) {
+function withSearchQuery<T extends PgSelect>(
+  qb: T,
+  semester: string,
+  query?: string,
+) {
   if (!query) return qb;
   return qb.where(
-    or(
-      ilike(projects.title, `%${query}%`),
-      ilike(projects.summary, `%${query}%`),
+    and(
+      eq(projects.semester, semester),
+      or(
+        ilike(projects.title, `%${query}%`),
+        ilike(projects.summary, `%${query}%`),
+        ilike(projects.ownerName, `%${query}%`),
+        ilike(projects.ownerUsername, `%${query}%`),
+      ),
     ),
   );
-}
-
-function withPagination<T extends PgSelect>(
-  qb: T,
-  offset: number,
-  limit: number,
-) {
-  return qb.offset(offset).limit(limit);
 }
 
 export const getProjects = cache(
@@ -40,16 +41,12 @@ export const getProjects = cache(
       .select()
       .from(projects)
       .where(eq(projects.semester, semester))
-      .orderBy(
-        desc(projects.featured),
-        desc(projects.starsCount),
-        asc(projects.title),
-      )
+      .orderBy(desc(projects.featured), desc(projects.starsCount))
+      .offset(offset)
+      .limit(limit)
       .$dynamic();
 
-    void withPagination(dynamicQuery, offset, limit);
-    void withSearchQuery(dynamicQuery, query);
-
+    void withSearchQuery(dynamicQuery, semester, query);
     return dynamicQuery;
   },
 );
