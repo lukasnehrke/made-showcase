@@ -19,7 +19,7 @@ function CardAction({
   return (
     <Link
       className={cn(
-        'flex items-center rounded-xl bg-red-400 px-2 py-1 text-white transition-colors hover:bg-red-500 space-x-1 z-20',
+        'flex items-center rounded-xl px-2 py-1 text-white transition-colors space-x-1 z-20',
         className,
       )}
       href={href}
@@ -37,7 +37,7 @@ export interface CardProps {
 
 export function Card({ project }: CardProps) {
   return (
-    <div className="relative overflow-hidden rounded-lg border border-stone-200 transition-all hover:shadow-lg shadow-md">
+    <div className="relative overflow-hidden rounded-lg border bg-card transition-all hover:shadow-lg shadow-md">
       <div className="flex flex-col h-full pb-3">
         {project.bannerUrl ? (
           <Image
@@ -50,7 +50,7 @@ export function Card({ project }: CardProps) {
         ) : (
           <div className={cn('h-4 w-full', getRandomColor(project.id))} />
         )}
-        <div className="border-t border-stone-200 p-4 flex-grow">
+        <div className="border-t p-4 flex-grow">
           <p className="my-0 text-xl font-bold leading-tight line-clamp-3">
             {project.title}
           </p>
@@ -92,7 +92,7 @@ export function Card({ project }: CardProps) {
             <div className="flex items-center space-x-1">
               {project.reportUrl ? (
                 <CardAction
-                  className="bg-green-400 hover:bg-green-500"
+                  className="bg-green-400 hover:bg-green-500 dark:bg-green-500 dark:hover:bg-green-600"
                   href={project.reportUrl}
                   icon={<BookMarked size={16} />}
                   title="Final Report"
@@ -100,6 +100,7 @@ export function Card({ project }: CardProps) {
               ) : null}
               {project.presentationUrl ? (
                 <CardAction
+                  className="bg-red-400 hover:bg-red-500 dark:bg-red-500 dark:hover:bg-red-600"
                   href={project.presentationUrl}
                   icon={<Presentation size={16} />}
                   title="Presentation"

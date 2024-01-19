@@ -3,6 +3,7 @@ import type { PropsWithChildren } from 'react';
 import './globals.css';
 import { Analytics } from '@vercel/analytics/react';
 import { GeistSans } from 'geist/font/sans';
+import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
   title: {
@@ -21,7 +22,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="en">
-      <body className={GeistSans.className}>{children}</body>
+      <body className={GeistSans.className}>
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
       <Analytics />
     </html>
   );
