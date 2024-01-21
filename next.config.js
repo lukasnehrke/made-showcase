@@ -12,15 +12,6 @@ const nextConfig = {
       },
     ],
   },
-  async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/ss23',
-        permanent: false,
-      },
-    ];
-  },
 };
 
 module.exports = nextConfig;
