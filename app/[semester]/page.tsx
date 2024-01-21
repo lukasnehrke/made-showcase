@@ -15,12 +15,6 @@ interface PageProps {
   };
 }
 
-/*
-export function generateStaticParams() {
-  return semesters.map((semester) => ({ semester }));
-}
-*/
-
 export function generateMetadata({ params }: PageProps) {
   return {
     title: getLongSemester(params.semester),

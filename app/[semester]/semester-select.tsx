@@ -26,7 +26,11 @@ export default function SemesterSelect() {
       <SelectTrigger className="w-[120px]">
         <SelectValue placeholder="Semester" />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent
+        ref={(ref) =>
+          ref?.addEventListener('touchend', (e) => { e.preventDefault(); })
+        }
+      >
         {semesters.map((item) => (
           <SelectItem key={item} value={item}>
             {getPrettySemester(item)}
