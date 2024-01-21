@@ -1,5 +1,4 @@
 import {
-  boolean,
   integer,
   pgTable,
   serial,
@@ -11,7 +10,7 @@ import {
 export const projects = pgTable('projects', {
   id: varchar('id').primaryKey(),
   semester: varchar('semester').notNull(),
-  featured: boolean('featured').notNull().default(false),
+  score: integer('score').notNull().default(0),
   title: varchar('title').notNull(),
   summary: text('summary').notNull(),
   repositoryUrl: varchar('repository_url').notNull(),

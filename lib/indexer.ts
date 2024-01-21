@@ -6,10 +6,12 @@ import { projects } from '@/lib/schema';
 import { madeTemplateRepository, overrides } from '@/lib/constants';
 
 interface UpdateProject {
+  score: number;
   title?: string;
   summary?: string;
   semester?: string;
   repositoryUrl?: string;
+  bannerUrl?: string;
   reportUrl?: string;
   presentationUrl?: string;
   starsCount: number;
@@ -30,7 +32,7 @@ const getTemplateForks = async (page: number) => {
     .listForks({
       ...madeTemplateRepository,
       page,
-      per_page: 100,
+      per_page: 20,
       sort: 'oldest',
     })
     .then((res) =>
@@ -48,7 +50,10 @@ const isVideo = (file?: string) => {
 
 const isError = (err?: unknown) => {
   return (
-    !err || typeof err !== 'object' || !('status' in err) || err.status !== 304
+    !err ||
+    typeof err !== 'object' ||
+    !('status' in err) ||
+    (err.status !== 304 && err.status !== 404)
   );
 };
 
@@ -86,6 +91,7 @@ export const updateProjects = async () => {
       }
 
       const project: UpdateProject = {
+        score: fork.stargazers_count ?? 0,
         repositoryUrl: fork.html_url,
         starsCount: fork.stargazers_count ?? 0,
         ownerId: fork.owner.id,
@@ -179,6 +185,13 @@ export const updateProjects = async () => {
       if (`${fork.owner.login}/${fork.name}` in overrides) {
         Object.assign(project, overrides[`${fork.owner.login}/${fork.name}`]);
       }
+
+      // calculate score
+      if (project.title?.toLowerCase().includes('template'))
+        project.score -= 10;
+      if (project.reportUrl) project.score += 3;
+      if (project.presentationUrl) project.score += 3;
+      if (project.bannerUrl) project.score += 3;
 
       if (existingProject) {
         await tx.update(projects).set(project).where(eq(projects.id, id));

@@ -41,7 +41,7 @@ export const getProjects = cache(
       .select()
       .from(projects)
       .where(eq(projects.semester, semester))
-      .orderBy(desc(projects.featured), desc(projects.starsCount))
+      .orderBy(desc(projects.score))
       .offset(offset)
       .limit(limit)
       .$dynamic();
