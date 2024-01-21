@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { eq } from 'drizzle-orm';
 import { octokit } from '@/lib/octokit';
 import { db } from '@/lib/drizzle';
@@ -37,8 +38,8 @@ const getTemplateForks = async (page: number) => {
     .listForks({
       ...madeTemplateRepository,
       page,
-      per_page: 40,
-      sort: 'newest',
+      per_page: 10,
+      sort: 'stargazers',
     })
     .then((res) =>
       res.data.filter(
@@ -46,11 +47,6 @@ const getTemplateForks = async (page: number) => {
           fork.visibility === 'public' && !fork.disabled && !fork.is_template,
       ),
     );
-};
-
-const isVideo = (file?: string) => {
-  const ext = file?.split('.').pop()?.toLowerCase();
-  return ['mp4', 'mov', 'web', 'ogg'].includes(ext ?? '');
 };
 
 const isError = (err?: unknown) => {
@@ -160,9 +156,11 @@ export const updateProjects = async () => {
 
         if (Array.isArray(files.data)) {
           files.data.forEach((file) => {
+            const { name, ext } = path.parse(file.name.toLowerCase());
+
             // update link to the final report
-            if (file.name.startsWith('report')) {
-              if (file.name.endsWith('.pdf') && file.download_url) {
+            if (name === 'report') {
+              if (ext === '.pdf' && file.download_url) {
                 project.reportUrl = file.download_url;
               } else if (file.html_url) {
                 project.reportUrl = file.html_url;
@@ -170,8 +168,11 @@ export const updateProjects = async () => {
             }
 
             // update link to the final presentation
-            if (file.name.startsWith('presentation-video')) {
-              if (isVideo(file.name) && file.download_url) {
+            if (name === 'presentation-video') {
+              if (
+                ['mp4', 'mov', 'web', 'ogg'].includes(ext) &&
+                file.download_url
+              ) {
                 project.presentationUrl = file.download_url;
               } else if (file.html_url) {
                 project.presentationUrl = file.html_url;
