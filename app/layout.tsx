@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import type { PropsWithChildren } from 'react';
-import './globals.css';
 import { Analytics } from '@vercel/analytics/react';
 import { GeistSans } from 'geist/font/sans';
 import { ThemeProvider } from '@/components/theme-provider';
+import './globals.css';
 
 export const metadata: Metadata = {
   title: {
