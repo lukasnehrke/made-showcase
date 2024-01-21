@@ -31,5 +31,6 @@ module.exports = {
     '@typescript-eslint/no-non-null-assertion': 'off',
     'import/no-extraneous-dependencies': 'off',
     'no-console': 'off',
+    'import/named': 'off',
   },
 };
