@@ -1,9 +1,15 @@
-import * as cheerio from 'cheerio';
 import { eq } from 'drizzle-orm';
 import { octokit } from '@/lib/octokit';
 import { db } from '@/lib/drizzle';
 import { projects } from '@/lib/schema';
-import { madeTemplateRepository, overrides } from '@/lib/constants';
+import {
+  ignoredReadmeHashes,
+  madeTemplateRepository,
+  overrides,
+} from '@/lib/constants';
+import { summarizeProject } from '@/lib/ai';
+import { getHeading } from '@/lib/md';
+import { getSemester } from '@/lib/utils';
 
 interface UpdateProject {
   score: number;
@@ -16,7 +22,6 @@ interface UpdateProject {
   presentationUrl?: string;
   starsCount: number;
   ownerId: number;
-  ownerName?: string;
   ownerUsername: string;
   ownerUrl: string;
   ownerAvatarUrl: string;
@@ -32,8 +37,8 @@ const getTemplateForks = async (page: number) => {
     .listForks({
       ...madeTemplateRepository,
       page,
-      per_page: 20,
-      sort: 'oldest',
+      per_page: 40,
+      sort: 'newest',
     })
     .then((res) =>
       res.data.filter(
@@ -57,20 +62,13 @@ const isError = (err?: unknown) => {
   );
 };
 
-const getSemester = (date: Date): string => {
-  // ssXX starts in 1. April and ends in 30. September, wsXX starts in 1. October and ends in 31. March
-  const year = date.getFullYear() % 100;
-  if (date.getMonth() < 9 && date.getMonth() > 2) return `ss${year}`;
-  if (date.getMonth() < 3) return `ws${year - 1}`;
-  return `ws${year}`;
-};
-
 export const updateProjects = async () => {
   const forks = await getTemplateForks(2);
 
   const statuses: Status[] = [];
   for await (const fork of forks) {
     const id = String(fork.id);
+    const errors: unknown[] = [];
 
     const status = await db.transaction(async (tx) => {
       const existingProject = await tx.query.projects.findFirst({
@@ -87,7 +85,7 @@ export const updateProjects = async () => {
           .update(projects)
           .set({ updatedAt: new Date() })
           .where(eq(projects.id, id));
-        return { id, result: 'skipped' };
+        return { id, result: 'skipped', errors };
       }
 
       const project: UpdateProject = {
@@ -105,21 +103,8 @@ export const updateProjects = async () => {
         const createdAt = fork.created_at
           ? new Date(fork.created_at)
           : new Date();
+
         project.semester = getSemester(createdAt);
-      }
-
-      try {
-        // parser owner name
-        const user = await octokit.rest.users.getByUsername({
-          username: fork.owner.login,
-          headers: {
-            'If-Modified-Since': existingProject?.updatedAt.toUTCString(),
-          },
-        });
-
-        project.ownerName = user.data.name ?? undefined;
-      } catch (err) {
-        if (isError(err)) throw err;
       }
 
       try {
@@ -128,19 +113,36 @@ export const updateProjects = async () => {
           owner: fork.owner.login,
           repo: fork.name,
           path: 'README.md',
-          mediaType: {
-            format: 'html',
-          },
           headers: {
             'If-Modified-Since': existingProject?.updatedAt.toUTCString(),
           },
         });
 
-        const $ = cheerio.load(readme.data as unknown as string);
-        const heading = $('h1, h2, h3, h4, h5, h6').first().text().trim();
+        if (
+          !Array.isArray(readme.data) &&
+          readme.data.type === 'file' &&
+          readme.data.encoding === 'base64'
+        ) {
+          if (!ignoredReadmeHashes.includes(readme.data.sha)) {
+            const contents = atob(readme.data.content);
+            const heading = getHeading(contents);
 
-        project.title = heading || fork.name;
-        project.summary = fork.description ?? 'An awesome MADE project.';
+            if (heading && !heading.toLowerCase().includes('template')) {
+              try {
+                // Generate title and description using AI
+                const { title, description } = await summarizeProject(contents);
+                project.title = title;
+                project.summary = description;
+              } catch (err) {
+                errors.push(err);
+              }
+            }
+          }
+        } else {
+          errors.push(
+            'README.md has invalid encoding, is a directory or is too large',
+          );
+        }
       } catch (err) {
         if (isError(err)) throw err;
       }
@@ -187,15 +189,25 @@ export const updateProjects = async () => {
       }
 
       // calculate score
-      if (project.title?.toLowerCase().includes('template'))
-        project.score -= 10;
       if (project.reportUrl) project.score += 3;
       if (project.presentationUrl) project.score += 3;
       if (project.bannerUrl) project.score += 3;
 
+      // fallback to repository name
+      if (!project.title) {
+        project.title = fork.name;
+        project.score -= 5;
+      }
+
+      // fallback to default summary
+      if (!project.summary) {
+        project.summary = 'An awesome MADE project.';
+        project.score -= 5;
+      }
+
       if (existingProject) {
         await tx.update(projects).set(project).where(eq(projects.id, id));
-        return { id, result: 'updated' };
+        return { id, result: 'updated', errors };
       }
 
       await tx.insert(projects).values({
@@ -203,11 +215,11 @@ export const updateProjects = async () => {
         ...project,
         semester: project.semester!,
         repositoryUrl: project.repositoryUrl!,
-        title: project.title!,
-        summary: project.summary!,
+        title: project.title,
+        summary: project.summary,
       });
 
-      return { id, result: 'created' };
+      return { id, result: 'created', errors };
     });
 
     statuses.push(status);
