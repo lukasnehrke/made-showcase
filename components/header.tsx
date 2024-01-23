@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { RemoveScroll } from 'react-remove-scroll';
 import { Container } from '@/components/container';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
@@ -19,19 +20,21 @@ export function Header({ className, children }: HeaderProps) {
           className,
         )}
       >
-        <Container className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h1 className="text-lg leading-tight">
-              <span className="mr-2">🔥</span>
-              <Link className="hover:underline" href="/">
-                <span className="font-medium">#MADE</span> Showcase
-              </Link>
-            </h1>
-            <ThemeToggle />
-          </div>
-          {children}
-          <Divider />
-        </Container>
+        <div className={RemoveScroll.classNames.fullWidth}>
+          <Container className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h1 className="text-lg leading-tight">
+                <span className="mr-2">🔥</span>
+                <Link className="hover:underline" href="/">
+                  <span className="font-medium">#MADE</span> Showcase
+                </Link>
+              </h1>
+              <ThemeToggle />
+            </div>
+            {children}
+            <Divider />
+          </Container>
+        </div>
       </header>
     </div>
   );

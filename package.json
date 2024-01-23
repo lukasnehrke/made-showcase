@@ -29,6 +29,7 @@
     "openai": "^4.25.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-remove-scroll": "^2.5.7",
     "remark": "^15.0.1",
     "strip-markdown": "^6.0.0",
     "tailwind-merge": "^2.2.0",
