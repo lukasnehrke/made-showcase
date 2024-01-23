@@ -30,12 +30,13 @@ export default function ProjectList({
   useEffect(() => {
     if (state.ok) {
       setProjects((prev) => [...prev, ...state.projects]);
-      setLoadMore(state.projects.length === 25);
+      setLoadMore(state.projects.length === 24);
     }
   }, [state]);
 
   useEffect(() => {
     setProjects(initialProjects);
+    setLoadMore(initialProjects.length === 25);
   }, [initialProjects]);
 
   const shownProjects = loadMore ? projects.toSpliced(-1) : projects;
@@ -49,7 +50,8 @@ export default function ProjectList({
               <Card key={project.id} project={project} />
             ))}
           </div>
-          {loadMore ? <form
+          {loadMore ? (
+            <form
               action={formAction}
               className="flex items-center justify-center mt-8"
             >
@@ -60,7 +62,7 @@ export default function ProjectList({
                 value={searchParams.get('query') ?? ''}
               />
               <input name="offset" type="hidden" value={projects.length} />
-              <input name="limit" type="hidden" value={25} />
+              <input name="limit" type="hidden" value={24} />
               <Button
                 className="text-sky-500 hover:text-sky-400"
                 type="submit"
@@ -69,7 +71,8 @@ export default function ProjectList({
                 Load more projects
                 <ChevronsDown className="ml-2 w-4 h-4" />
               </Button>
-            </form> : null}
+            </form>
+          ) : null}
         </>
       ) : (
         <Empty />
