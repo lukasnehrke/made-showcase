@@ -1,15 +1,33 @@
 'use client';
 
-import { ChevronsDown } from 'lucide-react';
+import { ChevronsDown, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
-import { useFormState } from 'react-dom';
+import { useFormState, useFormStatus } from 'react-dom';
 import { Card } from '@/app/[semester]/card';
 import type { Project } from '@/lib/schema';
 import { Empty } from '@/app/[semester]/empty';
 import { Button } from '@/components/button';
 import type { FetchProjectsForm } from '@/actions/fetch-projects';
 import { fetchProjects } from '@/actions/fetch-projects';
+
+function LoadMoreButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button
+      className="text-sky-500 hover:text-sky-400"
+      type="submit"
+      variant="ghost"
+    >
+      Load more projects
+      {pending ? (
+        <Loader2 className="ml-2 w-4 h-4 animate-spin" />
+      ) : (
+        <ChevronsDown className="ml-2 w-4 h-4" />
+      )}
+    </Button>
+  );
+}
 
 const initialState: FetchProjectsForm = {
   ok: false,
@@ -63,14 +81,7 @@ export default function ProjectList({
               />
               <input name="offset" type="hidden" value={projects.length} />
               <input name="limit" type="hidden" value={24} />
-              <Button
-                className="text-sky-500 hover:text-sky-400"
-                type="submit"
-                variant="ghost"
-              >
-                Load more projects
-                <ChevronsDown className="ml-2 w-4 h-4" />
-              </Button>
+              <LoadMoreButton />
             </form>
           ) : null}
         </>

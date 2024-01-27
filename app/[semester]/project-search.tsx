@@ -2,18 +2,29 @@
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useDebouncedCallback } from 'use-debounce';
-import { Search } from 'lucide-react';
+import { Loader2, Search } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Input } from '@/components/input';
 
 export default function ProjectSearch() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
-  const handleSearch = useDebouncedCallback((term: string) => {
+  useEffect(() => {
+    setLoading(false);
+  }, [searchParams]);
+
+  const handleChange = (query: string): void => {
+    setLoading(true);
+    handleSearch(query);
+  };
+
+  const handleSearch = useDebouncedCallback((query: string) => {
     const params = new URLSearchParams(searchParams);
-    if (term) {
-      params.set('query', term);
+    if (query) {
+      params.set('query', query);
     } else {
       params.delete('query');
     }
@@ -22,11 +33,17 @@ export default function ProjectSearch() {
 
   return (
     <div className="relative w-full">
-      <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+      {loading ? (
+        <Loader2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground animate-spin" />
+      ) : (
+        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+      )}
       <Input
         className="pl-9"
         defaultValue={searchParams.get('query')?.toString()}
-        onChange={(e) => handleSearch(e.target.value)}
+        onChange={(e) => {
+          handleChange(e.target.value);
+        }}
         placeholder="Search projects.."
         type="search"
       />

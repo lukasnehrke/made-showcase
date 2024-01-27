@@ -12,6 +12,8 @@ function withSearchQuery<T extends PgSelect>(
   query?: string,
 ) {
   if (!query) return qb;
+
+  // TODO: use full-text search once it's available in drizzle?
   return qb.where(
     and(
       eq(projects.semester, semester),
