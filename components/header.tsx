@@ -1,11 +1,14 @@
 import Link from 'next/link';
+import * as React from 'react';
 import type { ReactNode } from 'react';
 import { RemoveScroll } from 'react-remove-scroll';
+import { HelpCircle } from 'lucide-react';
 import { Container } from '@/components/container';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
 import { Divider } from '@/components/divider';
 import { semesters } from '@/lib/constants';
+import { Button } from '@/components/button';
 
 export interface HeaderProps {
   className?: string;
@@ -30,7 +33,15 @@ export function Header({ className, children }: HeaderProps) {
                   <span className="font-medium">#MADE</span> Showcase
                 </Link>
               </h1>
-              <ThemeToggle />
+              <div className="space-x-1">
+                <Link href="/faq">
+                  <Button size="icon" variant="ghost">
+                    <HelpCircle className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100" />
+                    <span className="sr-only">FAQ</span>
+                  </Button>
+                </Link>
+                <ThemeToggle />
+              </div>
             </div>
             {children}
             <Divider />

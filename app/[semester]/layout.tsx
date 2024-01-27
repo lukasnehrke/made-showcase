@@ -21,6 +21,8 @@ export default function Layout({ children }: PropsWithChildren) {
           <div className="flex items-center justify-between py-5 mx-1 text-sm tracking-tight text-muted-foreground">
             <div>
               <p className="hidden md:block">
+                Project descriptions are AI-generated and may not be accurate.
+                <br />
                 This project is not affiliated with the University of
                 Erlangen-Nuremberg.
               </p>
