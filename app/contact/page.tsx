@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { Container } from '@/components/container';
 import { Header } from '@/components/header';
 
+export const dynamic = 'force-static';
+
 export default function ContactPage() {
   return (
     <>
