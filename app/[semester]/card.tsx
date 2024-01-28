@@ -18,10 +18,7 @@ function CardAction({
 }) {
   return (
     <Link
-      className={cn(
-        'flex items-center rounded-xl px-2 py-1 text-white transition-colors space-x-1 z-20',
-        className,
-      )}
+      className={cn('flex items-center rounded-xl px-2 py-1 text-white transition-colors space-x-1 z-20', className)}
       href={href}
       target="_blank"
     >
@@ -51,9 +48,7 @@ export function Card({ project }: CardProps) {
           <div className={cn('h-4 w-full', getRandomColor(project.id))} />
         )}
         <div className="border-t p-4 flex-grow">
-          <p className="my-0 text-xl font-bold leading-tight line-clamp-3">
-            {project.title}
-          </p>
+          <p className="my-0 text-xl font-bold leading-tight line-clamp-3">{project.title}</p>
           <div className="flex items-center space-x-1.5 mt-1 text-slate-500 px-2">
             <Image
               alt="avatar"
@@ -62,17 +57,11 @@ export function Card({ project }: CardProps) {
               src={project.ownerAvatarUrl}
               width={24}
             />
-            <Link
-              className="text-sm font-medium z-20 hover:underline"
-              href={project.ownerUrl}
-              target="_blank"
-            >
+            <Link className="text-sm font-medium z-20 hover:underline" href={project.ownerUrl} target="_blank">
               {project.ownerName ?? `@${project.ownerUsername}`}
             </Link>
           </div>
-          <p className="mt-2 line-clamp-4 text-sm font-normal leading-snug text-stone-500">
-            {project.summary}
-          </p>
+          <p className="mt-2 line-clamp-4 text-sm font-normal leading-snug text-stone-500">{project.summary}</p>
         </div>
 
         <div className="flex items-center justify-end px-4">
@@ -80,11 +69,7 @@ export function Card({ project }: CardProps) {
             className="bg-amber-500 hover:bg-amber-600"
             href={`${project.repositoryUrl}/stargazers`}
             icon={<Star size={16} />}
-            title={
-              project.starsCount > 0
-                ? String(project.starsCount)
-                : 'Gift a star'
-            }
+            title={project.starsCount > 0 ? String(project.starsCount) : 'Gift a star'}
           />
         </div>
         {project.reportUrl || project.presentationUrl ? (
@@ -111,11 +96,7 @@ export function Card({ project }: CardProps) {
         ) : null}
       </div>
 
-      <Link
-        className="absolute block inset-0 z-10"
-        href={project.repositoryUrl}
-        target="_blank"
-      />
+      <Link className="absolute block inset-0 z-10" href={project.repositoryUrl} target="_blank" />
     </div>
   );
 }

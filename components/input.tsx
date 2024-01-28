@@ -3,10 +3,7 @@ import { cn } from '@/lib/utils';
 
 export type InputProps = InputHTMLAttributes<HTMLInputElement>;
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
-  { className, type, ...props },
-  ref,
-) {
+export const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ className, type, ...props }, ref) {
   return (
     <input
       className={cn(

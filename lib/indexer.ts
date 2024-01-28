@@ -3,11 +3,7 @@ import { eq } from 'drizzle-orm';
 import { octokit } from '@/lib/octokit';
 import { db } from '@/lib/drizzle';
 import { projects } from '@/lib/schema';
-import {
-  ignoredReadmeHashes,
-  madeTemplateRepository,
-  overrides,
-} from '@/lib/constants';
+import { ignoredReadmeHashes, madeTemplateRepository, overrides } from '@/lib/constants';
 import { summarizeProject } from '@/lib/ai';
 import { getHeading } from '@/lib/md';
 import { getSemester } from '@/lib/utils';
@@ -79,15 +75,8 @@ export const updateFork = async (fork: Fork): Promise<Status> => {
       where: eq(projects.id, id),
     });
 
-    if (
-      existing?.updatedAt &&
-      fork.updated_at &&
-      existing.updatedAt >= new Date(fork.updated_at)
-    ) {
-      await tx
-        .update(projects)
-        .set({ updatedAt: new Date() })
-        .where(eq(projects.id, id));
+    if (existing?.updatedAt && fork.updated_at && existing.updatedAt >= new Date(fork.updated_at)) {
+      await tx.update(projects).set({ updatedAt: new Date() }).where(eq(projects.id, id));
 
       return { id, result: 'skipped', warnings };
     }
@@ -109,9 +98,7 @@ export const updateFork = async (fork: Fork): Promise<Status> => {
 
     // set semester the project was created: ssXX or wsXX
     if (!existing?.semester) {
-      const createdAt = fork.created_at
-        ? new Date(fork.created_at)
-        : new Date();
+      const createdAt = fork.created_at ? new Date(fork.created_at) : new Date();
 
       project.semester = getSemester(createdAt);
     }
@@ -127,11 +114,7 @@ export const updateFork = async (fork: Fork): Promise<Status> => {
         },
       });
 
-      if (
-        !Array.isArray(readme.data) &&
-        readme.data.type === 'file' &&
-        readme.data.encoding === 'base64'
-      ) {
+      if (!Array.isArray(readme.data) && readme.data.type === 'file' && readme.data.encoding === 'base64') {
         if (!ignoredReadmeHashes.includes(readme.data.sha)) {
           const contents = atob(readme.data.content);
           const heading = getHeading(contents);
@@ -148,9 +131,7 @@ export const updateFork = async (fork: Fork): Promise<Status> => {
           }
         }
       } else {
-        warnings.push(
-          'README has invalid encoding, is a directory or is too large',
-        );
+        warnings.push('README has invalid encoding, is a directory or is too large');
       }
     } catch (err) {
       if (isError(err)) throw err;
@@ -182,10 +163,7 @@ export const updateFork = async (fork: Fork): Promise<Status> => {
 
           // update link to the final presentation
           if (name === 'presentation-video') {
-            if (
-              ['mp4', 'mov', 'web', 'ogg'].includes(ext) &&
-              file.download_url
-            ) {
+            if (['mp4', 'mov', 'web', 'ogg'].includes(ext) && file.download_url) {
               project.presentationUrl = file.download_url;
             } else if (file.html_url) {
               project.presentationUrl = file.html_url;
@@ -245,12 +223,7 @@ const getTemplateForks = async (page: number, limit: number) => {
       per_page: limit,
       sort: 'oldest',
     })
-    .then((res) =>
-      res.data.filter(
-        (fork) =>
-          fork.visibility === 'public' && !fork.disabled && !fork.is_template,
-      ),
-    );
+    .then((res) => res.data.filter((fork) => fork.visibility === 'public' && !fork.disabled && !fork.is_template));
 };
 
 // --- Error Helpers ---

@@ -18,12 +18,7 @@ export interface HeaderProps {
 export function Header({ className, children }: HeaderProps) {
   return (
     <div className="pb-16 md:pb-20">
-      <header
-        className={cn(
-          'pt-4 md:pt-8 fixed z-50 bg-background left-0 w-full',
-          className,
-        )}
-      >
+      <header className={cn('pt-4 md:pt-8 fixed z-50 bg-background left-0 w-full', className)}>
         <div className={RemoveScroll.classNames.fullWidth}>
           <Container className="space-y-3">
             <div className="flex items-center justify-between">

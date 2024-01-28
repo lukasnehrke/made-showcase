@@ -1,13 +1,7 @@
 'use client';
 
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/select';
 import { semesters } from '@/lib/constants';
 import { getPrettySemester } from '@/lib/utils';
 
@@ -28,7 +22,9 @@ export default function SemesterSelect() {
       </SelectTrigger>
       <SelectContent
         ref={(ref) =>
-          ref?.addEventListener('touchend', (e) => { e.preventDefault(); })
+          ref?.addEventListener('touchend', (e) => {
+            e.preventDefault();
+          })
         }
       >
         {semesters.map((item) => (
@@ -37,9 +33,7 @@ export default function SemesterSelect() {
           </SelectItem>
         ))}
         {typeof semester === 'string' && !semesters.includes(semester) && (
-          <SelectItem value={semester}>
-            {getPrettySemester(semester)}
-          </SelectItem>
+          <SelectItem value={semester}>{getPrettySemester(semester)}</SelectItem>
         )}
       </SelectContent>
     </Select>

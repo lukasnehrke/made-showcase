@@ -6,11 +6,7 @@ import type { PgSelect } from 'drizzle-orm/pg-core';
 import { db } from '@/lib/drizzle';
 import { projects } from '@/lib/schema';
 
-function withSearchQuery<T extends PgSelect>(
-  qb: T,
-  semester: string,
-  query?: string,
-) {
+function withSearchQuery<T extends PgSelect>(qb: T, semester: string, query?: string) {
   if (!query) return qb;
 
   // TODO: use full-text search once it's available in drizzle?
@@ -28,17 +24,7 @@ function withSearchQuery<T extends PgSelect>(
 }
 
 export const getProjects = cache(
-  async ({
-    semester,
-    query,
-    offset,
-    limit,
-  }: {
-    semester: string;
-    offset: number;
-    limit: number;
-    query?: string;
-  }) => {
+  async ({ semester, query, offset, limit }: { semester: string; offset: number; limit: number; query?: string }) => {
     const dynamicQuery = db
       .select()
       .from(projects)

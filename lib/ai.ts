@@ -12,8 +12,7 @@ export const summarizeProject = async (contents: string) => {
     messages: [
       {
         role: 'system',
-        content:
-          'You are a knowledgeable assistant who provides concise summaries and output JSON.',
+        content: 'You are a knowledgeable assistant who provides concise summaries and output JSON.',
       },
       {
         role: 'user',

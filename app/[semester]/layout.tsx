@@ -23,14 +23,11 @@ export default function Layout({ children }: PropsWithChildren) {
               <p className="hidden md:block">
                 Project descriptions are AI-generated and may not be accurate.
                 <br />
-                This project is not affiliated with the University of
-                Erlangen-Nuremberg.
+                This project is not affiliated with the University of Erlangen-Nuremberg.
               </p>
             </div>
             <div className="space-x-6">
-              <Link href="https://github.com/lukasnehrke/made-showcase">
-                Source Code
-              </Link>
+              <Link href="https://github.com/lukasnehrke/made-showcase">Source Code</Link>
               <Link href="/contact">Contact</Link>
             </div>
           </div>

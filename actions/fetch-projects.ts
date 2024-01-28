@@ -16,10 +16,7 @@ export interface FetchProjectsForm {
   projects: Project[];
 }
 
-export async function fetchProjects(
-  _prevState: FetchProjectsForm,
-  formData: FormData,
-): Promise<FetchProjectsForm> {
+export async function fetchProjects(_prevState: FetchProjectsForm, formData: FormData): Promise<FetchProjectsForm> {
   const fields = schema.safeParse({
     semester: formData.get('semester'),
     query: formData.get('query'),

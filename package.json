@@ -2,6 +2,7 @@
   "name": "made-showcase",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "build": "next build",
     "dev": "next dev --turbo",
@@ -11,7 +12,6 @@
     "prepare": "husky install",
     "start": "next start"
   },
-  "prettier": "@vercel/style-guide/prettier",
   "dependencies": {
     "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@radix-ui/react-select": "^2.0.0",
