@@ -1,7 +1,10 @@
-import { integer, pgTable, serial, text, timestamp, varchar } from 'drizzle-orm/pg-core';
+import { integer, pgTable, serial, text, boolean, timestamp, varchar } from 'drizzle-orm/pg-core';
 
 export const projects = pgTable('projects', {
   id: varchar('id').primaryKey(),
+  claimed: boolean('claimed').notNull().default(false),
+  hidden: boolean('hidden').notNull().default(false),
+  excluded: boolean('excluded').notNull().default(false),
   semester: varchar('semester').notNull(),
   score: integer('score').notNull().default(0),
   title: varchar('title').notNull(),

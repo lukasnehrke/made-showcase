@@ -4,6 +4,7 @@ import { Analytics } from '@vercel/analytics/react';
 import { GeistSans } from 'geist/font/sans';
 import { ThemeProvider } from '@/components/theme-provider';
 import './globals.css';
+import { Toaster } from '@/components/ui/sonner';
 
 export const metadata: Metadata = {
   title: {
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
       <body className={GeistSans.className}>
         <ThemeProvider>{children}</ThemeProvider>
       </body>
+      <Toaster position="top-right" />
       <Analytics />
     </html>
   );
