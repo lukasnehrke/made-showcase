@@ -49,7 +49,7 @@ export function Card({ project }: CardProps) {
         )}
         <div className="border-t p-4 flex-grow">
           <p className="my-0 text-xl font-bold leading-tight line-clamp-3">{project.title}</p>
-          <div className="flex items-center space-x-1.5 mt-1 text-slate-500 px-2">
+          <div className="flex items-center space-x-1.5 mt-1 text-slate-500 dark:text-slate-300 px-2">
             <Image
               alt="avatar"
               className="inline-block w-6 h-6 rounded-full"
@@ -61,7 +61,7 @@ export function Card({ project }: CardProps) {
               {project.ownerName ?? `@${project.ownerUsername}`}
             </Link>
           </div>
-          <p className="mt-2 line-clamp-4 text-sm font-normal leading-snug text-stone-500">{project.summary}</p>
+          <p className="mt-2 line-clamp-4 text-sm font-normal leading-snug text-muted-foreground">{project.summary}</p>
         </div>
 
         <div className="flex items-center justify-end px-4">
