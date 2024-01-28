@@ -1,8 +1,6 @@
 import Link from 'next/link';
-import { Header } from '@/components/header';
+import { Header } from '@/components/header/header';
 import { Container } from '@/components/container';
-
-export const dynamic = 'force-static';
 
 export default function Page() {
   return (

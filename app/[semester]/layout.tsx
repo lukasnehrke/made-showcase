@@ -2,7 +2,7 @@ import type { PropsWithChildren } from 'react';
 import Link from 'next/link';
 import SemesterSelect from '@/app/[semester]/semester-select';
 import ProjectSearch from '@/app/[semester]/project-search';
-import { Header } from '@/components/header';
+import { Header } from '@/components/header/header';
 import { Container } from '@/components/container';
 
 export default function Layout({ children }: PropsWithChildren) {
