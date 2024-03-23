@@ -27,7 +27,7 @@ export function generateMetadata({ params }: PageProps) {
 
 export default async function Page(props: PageProps) {
   const semester = props.params.semester.toLowerCase();
-  const query = (props.searchParams?.query || '').toLowerCase();
+  const query = (props.searchParams?.query ?? '').toLowerCase();
 
   if (!isValidSemester(semester)) {
     return notFound();

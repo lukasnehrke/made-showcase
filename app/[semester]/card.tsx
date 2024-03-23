@@ -72,7 +72,7 @@ export function Card({ project }: CardProps) {
             title={project.starsCount > 0 ? String(project.starsCount) : 'Gift a star'}
           />
         </div>
-        {project.reportUrl || project.presentationUrl ? (
+        {project.reportUrl ?? project.presentationUrl ? (
           <div className="flex items-center justify-end px-4 mt-1">
             <div className="flex items-center space-x-1">
               {project.reportUrl ? (

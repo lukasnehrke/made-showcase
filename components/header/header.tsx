@@ -25,7 +25,7 @@ export function Header({ className, children }: HeaderProps) {
             <div className="flex items-center justify-between">
               <h1 className="text-lg leading-tight">
                 <span className="mr-2">🔥</span>
-                <Link className="hover:underline" href={`/${semesters.at(-1)}`}>
+                <Link className="hover:underline" href={`/${semesters.at(-1)!}`}>
                   <span className="font-medium">#MADE</span> Showcase
                 </Link>
               </h1>
