@@ -7,7 +7,7 @@ export const madeTemplateRepository = {
   repo: 'made-template',
 };
 
-export const semesters = ['ss23', 'ws23'];
+export const semesters = ['ss23', 'ws23', 'ss24'];
 
 export const ignoredReadmeHashes = [
   'c3f139485c56deb74b26a8f5388759401f1a78c1',
