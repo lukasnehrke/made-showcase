@@ -46,7 +46,7 @@ interface Status {
 }
 
 export const updateProjects = async () => {
-  const forks = await getTemplateForks(1, 10);
+  const forks = await getTemplateForks(1, 100);
 
   const statuses: Status[] = [];
   for await (const fork of forks) {
@@ -87,7 +87,6 @@ export const updateFork = async (fork: Fork): Promise<Status> => {
 
     if (existing?.updatedAt && fork.updated_at && existing.updatedAt >= new Date(fork.updated_at)) {
       await tx.update(projects).set({ updatedAt: new Date() }).where(eq(projects.id, id));
-
       return { id, result: 'skipped (not modified)', warnings };
     }
 
@@ -193,7 +192,7 @@ export const updateFork = async (fork: Fork): Promise<Status> => {
     // calculate score
     if (project.reportUrl) project.score += 3;
     if (project.presentationUrl) project.score += 3;
-    if (project.bannerUrl) project.score += 3;
+    if (project.bannerUrl) project.score += 5;
 
     // fallback to repository name
     if (!project.title) {
