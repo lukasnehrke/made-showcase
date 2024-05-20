@@ -1,5 +1,8 @@
 CREATE TABLE IF NOT EXISTS "projects" (
 	"id" varchar PRIMARY KEY NOT NULL,
+	"claimed" boolean DEFAULT false NOT NULL,
+	"hidden" boolean DEFAULT false NOT NULL,
+	"excluded" boolean DEFAULT false NOT NULL,
 	"semester" varchar NOT NULL,
 	"score" integer DEFAULT 0 NOT NULL,
 	"title" varchar NOT NULL,
@@ -16,5 +19,13 @@ CREATE TABLE IF NOT EXISTS "projects" (
 	"owner_avatar_url" varchar NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
-
-CREATE INDEX IF NOT EXISTS "projects_semester_score_idx" ON "projects" ("semester", "score" DESC);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "readme_hashes" (
+	"commit" varchar PRIMARY KEY NOT NULL,
+	"readme" varchar NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "status" (
+	"id" integer PRIMARY KEY NOT NULL,
+	"last_readme_update" timestamp NOT NULL
+);

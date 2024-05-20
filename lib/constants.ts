@@ -12,6 +12,7 @@ export const semesters = ['ss23', 'ws23', 'ss24'];
 export const ignoredReadmeHashes = [
   'c3f139485c56deb74b26a8f5388759401f1a78c1',
   '234fed9f530a7bb4cc19822e430195d636e638db',
+  'ad13ff485fc9c66a3bdf33c75ab552696514b169',
 ];
 
 // prettier-ignore

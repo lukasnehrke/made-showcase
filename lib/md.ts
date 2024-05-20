@@ -18,6 +18,9 @@ export const getHeading = (md: string) => {
         .map((child) => ('value' in child ? child.value : ''))
         .join('');
 
+      if (!text) return;
+      if (text === 'Exercise Badges') return;
+
       heading = { depth: node.depth, text };
     }
   });

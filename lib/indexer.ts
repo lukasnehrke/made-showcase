@@ -46,7 +46,7 @@ interface Status {
 }
 
 export const updateProjects = async () => {
-  const forks = await getTemplateForks(3, 100);
+  const forks = await getTemplateForks(1, 10);
 
   const statuses: Status[] = [];
   for await (const fork of forks) {
@@ -70,15 +70,25 @@ export const updateFork = async (fork: Fork): Promise<Status> => {
         reportUrl: true,
         bannerUrl: true,
         presentationUrl: true,
+        claimed: true,
+        excluded: true,
         updatedAt: true,
       },
       where: eq(projects.id, id),
     });
 
+    if (existing?.claimed) {
+      return { id, result: 'skipped (claimed)', warnings };
+    }
+
+    if (existing?.excluded) {
+      return { id, result: 'skipped (excluded)', warnings };
+    }
+
     if (existing?.updatedAt && fork.updated_at && existing.updatedAt >= new Date(fork.updated_at)) {
       await tx.update(projects).set({ updatedAt: new Date() }).where(eq(projects.id, id));
 
-      return { id, result: 'skipped', warnings };
+      return { id, result: 'skipped (not modified)', warnings };
     }
 
     const project: UpdateProject = {
@@ -221,7 +231,7 @@ const getTemplateForks = async (page: number, limit: number) => {
       ...madeTemplateRepository,
       page,
       per_page: limit,
-      sort: 'oldest',
+      sort: 'newest',
     })
     .then((res) => res.data.filter((fork) => fork.visibility === 'public' && !fork.disabled && !fork.is_template));
 };

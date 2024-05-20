@@ -1,5 +1,15 @@
 import { integer, pgTable, serial, text, boolean, timestamp, varchar } from 'drizzle-orm/pg-core';
 
+export const status = pgTable('status', {
+  id: integer('id').primaryKey(),
+  lastReadmeUpdate: timestamp('last_readme_update').notNull(),
+});
+
+export const readmeHashes = pgTable('readme_hashes', {
+  commitHash: varchar('commit').primaryKey(),
+  readmeHash: varchar('readme').notNull(),
+});
+
 export const projects = pgTable('projects', {
   id: varchar('id').primaryKey(),
   claimed: boolean('claimed').notNull().default(false),
