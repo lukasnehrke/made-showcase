@@ -4,7 +4,7 @@ import { and, desc, eq, ilike, or } from 'drizzle-orm';
 import { unstable_cache as cache } from 'next/cache';
 import type { PgSelect } from 'drizzle-orm/pg-core';
 import { db } from '@/lib/drizzle';
-import type { Project} from '@/lib/schema';
+import type { Project } from '@/lib/schema';
 import { projects } from '@/lib/schema';
 
 function withSearchQuery<T extends PgSelect>(qb: T, semester: string, query?: string) {
@@ -14,6 +14,7 @@ function withSearchQuery<T extends PgSelect>(qb: T, semester: string, query?: st
   return qb.where(
     and(
       eq(projects.semester, semester),
+      eq(projects.hidden, false),
       or(
         ilike(projects.title, `%${query}%`),
         ilike(projects.summary, `%${query}%`),
@@ -38,7 +39,7 @@ export const getProjects = cache(
     const dynamicQuery = db
       .select()
       .from(projects)
-      .where(eq(projects.semester, semester))
+      .where(and(eq(projects.semester, semester), eq(projects.hidden, false)))
       .orderBy(desc(projects.score))
       .offset(offset)
       .limit(limit)
