@@ -3,7 +3,7 @@ import { auth } from '@/lib/auth';
 import { Header } from '@/components/header/header';
 import { Container } from '@/components/container';
 import { getProject } from '@/data/projects';
-import { ProjectDetails } from '@/app/my-project/project-details';
+import { ProjectDetails } from '@/app/settings/project-details';
 
 export default async function ProjectPage() {
   const session = await auth();

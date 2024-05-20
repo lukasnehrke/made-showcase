@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { SquareUser } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { auth } from '@/lib/auth';
@@ -28,11 +28,11 @@ export async function CurrentUser() {
             {session.user.name}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-48">
-          <Link href="/my-project">
+        <DropdownMenuContent align="center" className="w-48">
+          <Link href="/settings">
             <DropdownMenuItem>
-              <SquareUser className="mr-2 h-4 w-4" />
-              <span>My Project</span>
+              <Settings className="mr-2 h-4 w-4" />
+              <span>Project Settings</span>
             </DropdownMenuItem>
           </Link>
           <SignOutButton />
