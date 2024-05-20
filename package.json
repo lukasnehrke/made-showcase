@@ -7,8 +7,9 @@
     "build": "next build",
     "dev": "next dev --turbo",
     "format": "prettier --write .",
-    "generate": "drizzle-kit generate:pg",
+    "generate": "drizzle-kit generate",
     "lint": "next lint",
+    "migrate": "drizzle-kit migrate",
     "prepare": "husky install",
     "start": "next start"
   },
