@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/updateHashes",
+      "schedule": "0 0 1 * *"
+    },
+    {
+      "path": "/api/updateProjects",
+      "schedule": "0 0 */3 * *"
+    }
+  ]
+}
